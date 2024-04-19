@@ -1,3 +1,20 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+string ltrim(const string &);
+string rtrim(const string &);
+vector<string> split(const string &);
+
+/*
+ * Complete the 'maximumSum' function below.
+ *
+ * The function is expected to return a LONG_INTEGER.
+ * The function accepts following parameters:
+ *  1. LONG_INTEGER_ARRAY a
+ *  2. LONG_INTEGER m
+ */
+
 long maximumSum(vector<long> a, long m)
 {
     std::vector<pair<long, long>> sum(a.size());
