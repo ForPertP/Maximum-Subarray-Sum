@@ -17,33 +17,59 @@ vector<string> split(const string &);
 
 long maximumSum(vector<long> a, long m)
 {
-    std::vector<pair<long, long>> sum(a.size());
-    sum[0].first = a[0] % m;
-    sum[0].second = 1;
+long maximumSum(vector<long> a, long m)
+{
+    set<long> sums;
+    long sum = 0;
+    long max_modular_sum = 0;
+
+    for (long num : a)
+    {
+        sum = (sum + num) % m;
+        auto it = sums.upper_bound(sum);
+    
+        if (it != sums.end())
+        {
+            max_modular_sum = max(max_modular_sum, (sum - *it + m) % m);
+        }
+        
+        sums.insert(sum);
+        max_modular_sum = max(max_modular_sum, sum);
+    }
+
+    return max_modular_sum;
+}
+
+long maximumSum2(vector<long> a, long m)
+{
+    std::vector<std::pair<long, long>> sums(a.size());
+    sums[0].first = a[0] % m;
+    sums[0].second = 1;
     
     for (size_t i = 1; i < a.size(); ++i)
     {
-        sum[i].first = (sum[i - 1].first + a[i] % m) % m;
-        sum[i].second = i + 1;
+        sums[i].first = (sums[i - 1].first + a[i] % m) % m;
+        sums[i].second = i + 1;
     }
     
-    std::sort(sum.begin(), sum.end());
-    long max = sum[sum.size() - 1].first;
-    long min = LONG_MAX;
+    std::sort(sums.begin(), sums.end());
+    long max_modular_sum = sums[sums.size() - 1].first;
+    long min_diff = LONG_MAX;
 
     for (size_t i = 0; i < a.size() - 1; ++i)
     {
-        if (sum[i].second > sum[i + 1].second)
+        if (sums[i].second > sums[i + 1].second)
         {
-            if ((sum[i+1].first - sum[i].first) < min)
+            if ((sums[i+1].first - sums[i].first) < min_diff)
             {
-                min = sum[i + 1].first - sum[i].first;
+                min_diff = sums[i + 1].first - sums[i].first;
             }
         }
     }
 
-    return std::max(max, m - min);
+    return std::max(max_modular_sum, m - min_diff);
 }
+
 
 int main()
 {
