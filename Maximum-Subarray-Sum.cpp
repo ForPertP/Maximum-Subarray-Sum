@@ -17,31 +17,6 @@ vector<string> split(const string &);
 
 long maximumSum(vector<long> a, long m)
 {
-long maximumSum(vector<long> a, long m)
-{
-    set<long> sums;
-    long sum = 0;
-    long max_modular_sum = 0;
-
-    for (long num : a)
-    {
-        sum = (sum + num) % m;
-        auto it = sums.upper_bound(sum);
-    
-        if (it != sums.end())
-        {
-            max_modular_sum = max(max_modular_sum, (sum - *it + m) % m);
-        }
-        
-        sums.insert(sum);
-        max_modular_sum = max(max_modular_sum, sum);
-    }
-
-    return max_modular_sum;
-}
-
-long maximumSum2(vector<long> a, long m)
-{
     std::vector<std::pair<long, long>> sums(a.size());
     sums[0].first = a[0] % m;
     sums[0].second = 1;
