@@ -26,7 +26,32 @@ class Result
 
     public static long maximumSum(List<long> a, long m)
     {
+        List<Tuple<long, long>> sums = new List<Tuple<long, long>>(a.Count);
+        sums.Add(new Tuple<long, long>(a[0] % m, 1));
 
+        for (int i = 1; i < a.Count; ++i)
+        {
+            long currentSum = (sums[i - 1].Item1 + a[i] % m) % m;
+            sums.Add(new Tuple<long, long>(currentSum, i + 1));
+        }
+
+        sums = sums.OrderBy(x => x.Item1).ToList();
+        long maxModularSum = sums[sums.Count - 1].Item1;
+        long minDiff = long.MaxValue;
+
+        for (int i = 0; i < a.Count - 1; ++i)
+        {
+            if (sums[i].Item2 > sums[i + 1].Item2)
+            {
+                long diff = sums[i + 1].Item1 - sums[i].Item1;
+                if (diff < minDiff)
+                {
+                    minDiff = diff;
+                }
+            }
+        }
+
+        return Math.Max(maxModularSum, m - minDiff);
     }
 
 }
