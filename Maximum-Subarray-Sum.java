@@ -22,8 +22,31 @@ class Result {
      */
 
     public static long maximumSum(List<Long> a, long m) {
-    // Write your code here
+        int n = a.size();
+        long[][] sums = new long[n][2];
+        sums[0][0] = a.get(0) % m;
+        sums[0][1] = 1;
 
+        for (int i = 1; i < n; ++i) {
+            sums[i][0] = (sums[i - 1][0] + a.get(i) % m) % m;
+            sums[i][1] = i + 1;
+        }
+
+        Arrays.sort(sums, (x, y) -> Long.compare(x[0], y[0]));
+
+        long maxModularSum = sums[n - 1][0];
+        long minDiff = Long.MAX_VALUE;
+
+        for (int i = 0; i < n - 1; ++i) {
+            if (sums[i][1] > sums[i + 1][1]) {
+                long diff = sums[i + 1][0] - sums[i][0];
+                if (diff < minDiff) {
+                    minDiff = diff;
+                }
+            }
+        }
+
+        return Math.max(maxModularSum, m - minDiff);
     }
 
 }
