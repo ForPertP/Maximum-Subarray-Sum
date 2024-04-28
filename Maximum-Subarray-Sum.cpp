@@ -1,152 +1,106 @@
-#include <bits/stdc++.h>
+import java.io.*;
+import java.math.*;
+import java.security.*;
+import java.text.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.function.*;
+import java.util.regex.*;
+import java.util.stream.*;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 
-using namespace std;
+class Result {
 
-string ltrim(const string &);
-string rtrim(const string &);
-vector<string> split(const string &);
+    /*
+     * Complete the 'maximumSum' function below.
+     *
+     * The function is expected to return a LONG_INTEGER.
+     * The function accepts following parameters:
+     *  1. LONG_INTEGER_ARRAY a
+     *  2. LONG_INTEGER m
+     */
 
-/*
- * Complete the 'maximumSum' function below.
- *
- * The function is expected to return a LONG_INTEGER.
- * The function accepts following parameters:
- *  1. LONG_INTEGER_ARRAY a
- *  2. LONG_INTEGER m
- */
+    public static long maximumSum(List<Long> a, long m) {
+        TreeSet<Long> sums = new TreeSet<>();
+        long sum = 0;
+        long max_modular_sum = 0;
 
-long maximumSum(vector<long> a, long m)
-{
-    set<long> sums;
-    long sum = 0;
-    long max_modular_sum = 0;
+        for (long num : a) {
+            sum = (sum + num) % m;
+            Long higher = sums.higher(sum);
 
-    for (long num : a)
-    {
-        sum = (sum + num) % m;
-        auto it = sums.upper_bound(sum);
-    
-        if (it != sums.end())
-        {
-            max_modular_sum = max(max_modular_sum, (sum - *it + m) % m);
+            if (higher != null) {
+                max_modular_sum = Math.max(max_modular_sum, (sum - higher + m) % m);
+            }
+
+            sums.add(sum);
+            max_modular_sum = Math.max(max_modular_sum, sum);
         }
-        
-        sums.insert(sum);
-        max_modular_sum = max(max_modular_sum, sum);
-    }
 
-    return max_modular_sum;
-}
-
-
-long maximumSum2(vector<long> a, long m)
-{
-    std::vector<std::pair<long, long>> sums(a.size());
-    sums[0].first = a[0] % m;
-    sums[0].second = 1;
-    
-    for (size_t i = 1; i < a.size(); ++i)
-    {
-        sums[i].first = (sums[i - 1].first + a[i] % m) % m;
-        sums[i].second = i + 1;
+        return max_modular_sum;
     }
     
-    std::sort(sums.begin(), sums.end());
-    long max_modular_sum = sums[sums.size() - 1].first;
-    long min_diff = LONG_MAX;
+    public static long maximumSum2(List<Long> a, long m) {
+    // Write your code here
+        int n = a.size();
+        long[][] sums = new long[n][2];
+        sums[0][0] = a.get(0) % m;
+        sums[0][1] = 1;
 
-    for (size_t i = 0; i < a.size() - 1; ++i)
-    {
-        if (sums[i].second > sums[i + 1].second)
-        {
-            if ((sums[i+1].first - sums[i].first) < min_diff)
-            {
-                min_diff = sums[i + 1].first - sums[i].first;
+        for (int i = 1; i < n; ++i) {
+            sums[i][0] = (sums[i - 1][0] + a.get(i) % m) % m;
+            sums[i][1] = i + 1;
+        }
+
+        Arrays.sort(sums, (x, y) -> Long.compare(x[0], y[0]));
+
+        long maxModularSum = sums[n - 1][0];
+        long minDiff = Long.MAX_VALUE;
+
+        for (int i = 0; i < n - 1; ++i) {
+            if (sums[i][1] > sums[i + 1][1]) {
+                long diff = sums[i + 1][0] - sums[i][0];
+                if (diff < minDiff) {
+                    minDiff = diff;
+                }
             }
         }
+
+        return Math.max(maxModularSum, m - minDiff);
     }
 
-    return std::max(max_modular_sum, m - min_diff);
 }
 
+public class Solution {
+    public static void main(String[] args) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(System.getenv("OUTPUT_PATH")));
 
-int main()
-{
-    ofstream fout(getenv("OUTPUT_PATH"));
+        int q = Integer.parseInt(bufferedReader.readLine().trim());
 
-    string q_temp;
-    getline(cin, q_temp);
+        IntStream.range(0, q).forEach(qItr -> {
+            try {
+                String[] firstMultipleInput = bufferedReader.readLine().replaceAll("\\s+$", "").split(" ");
 
-    int q = stoi(ltrim(rtrim(q_temp)));
+                int n = Integer.parseInt(firstMultipleInput[0]);
 
-    for (int q_itr = 0; q_itr < q; q_itr++) {
-        string first_multiple_input_temp;
-        getline(cin, first_multiple_input_temp);
+                long m = Long.parseLong(firstMultipleInput[1]);
 
-        vector<string> first_multiple_input = split(rtrim(first_multiple_input_temp));
+                List<Long> a = Stream.of(bufferedReader.readLine().replaceAll("\\s+$", "").split(" "))
+                    .map(Long::parseLong)
+                    .collect(toList());
 
-        int n = stoi(first_multiple_input[0]);
+                long result = Result.maximumSum(a, m);
 
-        long m = stol(first_multiple_input[1]);
+                bufferedWriter.write(String.valueOf(result));
+                bufferedWriter.newLine();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
 
-        string a_temp_temp;
-        getline(cin, a_temp_temp);
-
-        vector<string> a_temp = split(rtrim(a_temp_temp));
-
-        vector<long> a(n);
-
-        for (int i = 0; i < n; i++) {
-            long a_item = stol(a_temp[i]);
-
-            a[i] = a_item;
-        }
-
-        long result = maximumSum(a, m);
-
-        fout << result << "\n";
+        bufferedReader.close();
+        bufferedWriter.close();
     }
-
-    fout.close();
-
-    return 0;
-}
-
-string ltrim(const string &str) {
-    string s(str);
-
-    s.erase(
-        s.begin(),
-        find_if(s.begin(), s.end(), not1(ptr_fun<int, int>(isspace)))
-    );
-
-    return s;
-}
-
-string rtrim(const string &str) {
-    string s(str);
-
-    s.erase(
-        find_if(s.rbegin(), s.rend(), not1(ptr_fun<int, int>(isspace))).base(),
-        s.end()
-    );
-
-    return s;
-}
-
-vector<string> split(const string &str) {
-    vector<string> tokens;
-
-    string::size_type start = 0;
-    string::size_type end = 0;
-
-    while ((end = str.find(" ", start)) != string::npos) {
-        tokens.push_back(str.substr(start, end - start));
-
-        start = end + 1;
-    }
-
-    tokens.push_back(str.substr(start));
-
-    return tokens;
 }
