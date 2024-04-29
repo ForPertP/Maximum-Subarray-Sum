@@ -22,6 +22,27 @@ class Result {
      */
 
     public static long maximumSum(List<Long> a, long m) {
+        TreeSet<Long> sums = new TreeSet<>();
+        long sum = 0;
+        long max_modular_sum = 0;
+
+        for (long num : a) {
+            sum = (sum + num) % m;
+            Long higher = sums.higher(sum);
+
+            if (higher != null) {
+                max_modular_sum = Math.max(max_modular_sum, (sum - higher + m) % m);
+            }
+
+            sums.add(sum);
+            max_modular_sum = Math.max(max_modular_sum, sum);
+        }
+
+        return max_modular_sum;
+    }
+
+    
+    public static long maximumSum2(List<Long> a, long m) {
         int n = a.size();
         long[][] sums = new long[n][2];
         sums[0][0] = a.get(0) % m;
